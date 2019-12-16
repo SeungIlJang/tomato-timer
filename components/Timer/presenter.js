@@ -3,33 +3,40 @@ import { View, StyleSheet, Text, StatusBar } from "react-native";
 import Button from "../Button";
 
 function formatTime(time) {
-  var minutes = Math.floor(time / 60);
+  let minutes = Math.floor(time / 60);
+  console.log(time,minutes);
   time -= minutes * 60;
-
-  var seconds = parseInt(time % 60, 10);
+  console.log(time);
+  let seconds = parseInt(time % 60, 10);
 
   return `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10
     ? `0${seconds}`
     : seconds}`;
 
-  return;
 }
+
+
 
 class Timer extends Component {
   componentWillReceiveProps(nextProps) {
     const currentProps = this.props;
-    if (!currentProps.isPlaying && nextProps.isPlaying) {
-      const timerInterval = setInterval(() => {
+    console.log("componentWillReceiveProps:",currentProps.isPlaying
+        ,nextProps.isPlaying);
+    //current false && next true
+    if(currentProps.isPlaying===false && nextProps.isPlaying===true){
+      const timerInterval = setInterval(()=>{
         currentProps.addSecond();
-      }, 1000);
+      },1000);
       this.setState({
-        interval: timerInterval
+        timerInterval
       });
-    } else if (currentProps.isPlaying && !nextProps.isPlaying) {
-      clearInterval(this.state.interval);
+    }else if(currentProps.isPlaying===true && nextProps.isPlaying===false){
+      clearInterval(this.state.timerInterval);
     }
   }
+
   render() {
+    console.log("Timer:",this.props);
     const {
       isPlaying,
       elapsedTime,
@@ -42,16 +49,17 @@ class Timer extends Component {
         <StatusBar barStyle="light-content" />
         <View style={styles.upper}>
           <Text style={styles.time}>
-            {formatTime(timerDuration - elapsedTime)}
+             {formatTime(timerDuration-elapsedTime)}
           </Text>
         </View>
         <View style={styles.lower}>
-          {!isPlaying && (
-            <Button iconName={"play-circle"} onPress={startTimer} />
-          )}
-          {isPlaying && (
-            <Button iconName={"stop-circle"} onPress={restartTimer} />
-          )}
+          {!isPlaying ?
+              <Button iconName={"play-circle"} onPress={()=>{startTimer()}}/>
+          :
+              <Button iconName={"stop-circle"} onPress={()=>{restartTimer()}} />
+          }
+
+
         </View>
       </View>
     );
